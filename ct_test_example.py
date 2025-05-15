@@ -69,4 +69,4 @@ print('Test 3')
 test_3()
 
 y = ct_detect(source.photon('100kVp, 2mm Al'), material.coeff('Water'), np.arange(0,10.1,0.1),1)
-plot(np.log(y)) # plotting log of the residual energy
+plot(np.log(y))  # plotting log of the residual energy
