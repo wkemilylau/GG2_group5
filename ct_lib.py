@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('tkagg')
 import numpy as np
 import numpy.matlib
 import os
@@ -36,7 +38,7 @@ def save_draw(data, storage_directory, file_name, map='gray', caxis=None, title=
 def save_plot(data, storage_directory, file_name, x=None, title=None, xlabel=None, ylabel=None, xlim=None, ylim=None):
 	"""save a graph"""
 	full_path = get_full_path(storage_directory, file_name)
- 
+
 	if x is None:
 		plt.plot(data)
 	else:
