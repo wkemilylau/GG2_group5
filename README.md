@@ -1,1 +1,1 @@
-# GG2_group5
+resources
