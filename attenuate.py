@@ -39,5 +39,8 @@ def attenuate(original_energy, coeff, depth):
 		raise ValueError('input depth has different number of samples to input original_energy')
 
 	# Work out residual energy for each depth and at each energy
+	mu_x = coeff[:, None] @ depth[None, :]
+	exp_mu_x = np.exp(-mu_x)
+	residual_energy = original_energy * exp_mu_x
 
-	return original_energy
+	return residual_energy
