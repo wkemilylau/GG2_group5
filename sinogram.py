@@ -13,7 +13,7 @@ material = Material()
 source = Source()
 
 # Create a phantom
-phantom = ct_phantom(material.name, 256, 1) #creates 256x256 image
+phantom = ct_phantom(material.name, 256, 3) #creates 256x256 image
 #print(material.name)
 draw(phantom)
 
@@ -21,7 +21,7 @@ draw(phantom)
 photons = source.photon('100kVp, 2mm Al')
 
 # Generate sinogram using ct_scan
-sinogram = ct_scan(photons, material, phantom, scale=0.01, angles=60)
+sinogram = ct_scan(photons, material, phantom, scale=0.01, angles=190)
 #print(sinogram.shape) = (angles, detector pixels)
 
 
