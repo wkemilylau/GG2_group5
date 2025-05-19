@@ -16,7 +16,7 @@ source = Source()
 # Create a phantom
 phantom = ct_phantom(material.name, 256, 3) #creates 256x256 image
 #print(material.name)
-draw(phantom)
+#draw(phantom)
 
 # Generate source photons
 photons = source.photon('100kVp, 2mm Al')
@@ -25,10 +25,23 @@ photons = source.photon('100kVp, 2mm Al')
 sinogram = ct_scan(photons, material, phantom, scale=0.01, angles=190)
 #print(sinogram.shape) = (angles, detector pixels)
 
-
+'''
 plt.imshow(sinogram, cmap='gray', interpolation='nearest')
 plt.gca().invert_yaxis()
 plt.title("Sinogram")
+plt.xlabel("Detector pixel locations")
+plt.ylabel("Projection angle")
+plt.colorbar()
+plt.show()
+'''
+
+#======================
+
+scale = 0.1  # cm per pixel
+attenuation_sinogram = ct_calibrate(photons, material, sinogram, scale)
+plt.imshow(attenuation_sinogram, cmap='gray', interpolation='nearest')
+plt.gca().invert_yaxis()
+plt.title("Attenuation sinogram")
 plt.xlabel("Detector pixel locations")
 plt.ylabel("Projection angle")
 plt.colorbar()
