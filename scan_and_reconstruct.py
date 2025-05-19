@@ -7,24 +7,29 @@ from hu import *
 
 def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, alpha=0.001):
 
-	""" Simulation of the CT scanning process
-		reconstruction = scan_and_reconstruct(photons, material, phantom, scale, angles, mas, alpha)
-		takes the phantom data in phantom (samples x samples), scans it using the
-		source photons and material information given, as well as the scale (in cm),
-		number of angles, time-current product in mas, and raised-cosine power
-		alpha for filtering. The output reconstruction is the same size as phantom."""
+    """ Simulation of the CT scanning process
+    reconstruction = scan_and_reconstruct(photons, material, phantom, scale, angles, mas, alpha)
+    takes the phantom data in phantom (samples x samples), scans it using the
+    source photons and material information given, as well as the scale (in cm),
+    number of angles, time-current product in mas, and raised-cosine power
+    alpha for filtering. The output reconstruction is the same size as phantom."""
 
+    # Convert photons per (mas, cm^2) to actual photons count (scale by mas and pixel size)
+    photons_total = photons * mas * (scale**2)
 
-	# convert source (photons per (mas, cm^2)) to photons
+    # Generate sinogram by scanning phantom
+    sinogram = ct_scan(photons_total, material, phantom, scale, angles)
 
-	# create sinogram from phantom data, with received detector values
+    # Calibrate sinogram to attenuation values
+    calibrated = ct_calibrate(photons_total, material, sinogram, scale)
 
-	# convert detector values into calibrated attenuation values
+    # Filter the calibrated sinogram with Ram-Lak filter (raised cosine alpha)
+    filtered = ramp_filter(calibrated, scale, alpha)
 
-	# Ram-Lak
+    # Reconstruct image by back-projecting the filtered sinogram
+    reconstruction = back_project(filtered, skip=1)
 
-	# Back-projection
+    # Convert reconstructed linear attenuation coefficients to Hounsfield Units (HU)
+    hu_image = hu(reconstruction, material)
 
-	# convert to Hounsfield Units
-
-	return phantom
+    return hu_image
