@@ -30,6 +30,6 @@ def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, a
     reconstruction = back_project(filtered, skip=1)
 
     # Convert reconstructed linear attenuation coefficients to Hounsfield Units (HU)
-    hu_image = hu(reconstruction, material)
+    hu_image = hu(photons_total, material, reconstruction, scale)
 
     return hu_image

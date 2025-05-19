@@ -3,15 +3,24 @@ from attenuate import *
 from ct_calibrate import *
 
 def hu(p, material, reconstruction, scale):
-	""" convert CT reconstruction output to Hounsfield Units
-	calibrated = hu(p, material, reconstruction, scale) converts the reconstruction into Hounsfield
-	Units, using the material coefficients, photon energy p and scale given."""
+    """Convert CT reconstruction output to Hounsfield Units (HU).
+    
+    calibrated = hu(p, material, reconstruction, scale) converts the reconstruction into 
+    Hounsfield Units, using the material coefficients, photon energy p, and the scale given.
+    """
 
-	# use water to calibrate
+    #Creating a 1x1 phantom representing a 1 cm path through either water or air
+    water_phantom = np.ones((1, 1))
 
-	# put this through the same calibration process as the normal CT data
+    #attenuation simulation for 1cm of both air and water
+    I_water = attenuate(p, material, water_phantom, 'Water', scale=scale)
+    I_air = attenuate(p, material, water_phantom, 'Air', scale=scale)
 
-	# use result to convert to hounsfield units
-	# limit minimum to -1024, which is normal for CT data.
+    # effective mu values obtained by calibrating the attenuated intensities
+    mu_water = ct_calibrate(p, material, I_water, scale)[0, 0]
+    mu_air = ct_calibrate(p, material, I_air, scale)[0, 0]
 
-	return reconstruction
+    #Hounsfield Units conversion
+    hu_image = 1000 * (reconstruction - mu_air) / (mu_water - mu_air)
+
+    return hu_image
