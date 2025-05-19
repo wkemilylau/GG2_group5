@@ -24,13 +24,13 @@ def back_project(sinogram, skip=1):
 	# back project over each angle in turn
 	for angle in range(angles):
 		sys.stdout.write("Reconstructing angle: %d   \r" % (angle + 1) )
-		
+
 		# Form rotated coordinates for output interpolation
 		# the rotation is about the middle of the image,
 		# but the output coordinates need to be relative to the top left
-		p = math.pi / 2 + angle * math.pi / angles
-		x0 = xi * math.cos(p) - yi * math.sin(p) + (ns / 2) - 0.5
-		
+		p = math.pi / 2 + angle * math.pi / angles # rotation angle in radians
+		x0 = xi * math.cos(p) - yi * math.sin(p) + (ns / 2) - 0.5 # compute rotated coordinates (for interpolation)
+
 		# interpolate and add this data to output
 		# remembering to multiply by dtheta as well as sum
 		# Either of the following options will work
