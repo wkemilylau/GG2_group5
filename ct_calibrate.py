@@ -1,5 +1,5 @@
 import numpy as np
-import scipy
+import scipy 
 from scipy import interpolate
 
 def ct_calibrate(photons, material, sinogram, scale):
@@ -15,6 +15,10 @@ def ct_calibrate(photons, material, sinogram, scale):
 	# length (has to be the same as in ct_scan.py)
 	n = sinogram.shape[1]
 
-	# perform calibration
+	#added stuff
+	I0_E = np.sum(photons, axis=0)         
+	I0_total = np.sum(I0_E)                 
+	clipped_sinogram = np.clip(sinogram, 1e-12, None)  
+	p = -np.log(clipped_sinogram / I0_total)           
 
-	return sinogram
+	return p
