@@ -14,7 +14,7 @@ def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, a
     number of angles, time-current product in mas, and raised-cosine power
     alpha for filtering. The output reconstruction is the same size as phantom."""
 
-    # Convert photons per (mas, cm^2) to actual photons count (scale by mas and pixel size)
+    # Convert photons per (mas,cm^2) to actual photons count (scale by mas and pixel size)
     photons_total = photons * mas * (scale**2)
 
     # Generate sinogram by scanning phantom
