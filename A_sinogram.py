@@ -7,6 +7,7 @@ from ct_phantom import *
 from ct_lib import *
 from scan_and_reconstruct import *
 from create_dicom import *
+from ct_detect import *
 
 # create object instances
 material = Material()
