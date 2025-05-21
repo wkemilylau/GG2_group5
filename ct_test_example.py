@@ -33,16 +33,34 @@ def test_1():
 
 def test_2():
 	# explain what this test is for
+	"""
+	Test 2 checks that a point-source phantom can be scanned and 
+	reconstructed to output something that is close to a delta function at 0
+	"""
 
 	# work out what the initial conditions should be
-	p = ct_phantom(material.name, 256, 2)
+	p = ct_phantom(material.name, 256, 2)		# impulse
 	s = source.photon('80kVp, 1mm Al')
 	y = scan_and_reconstruct(s, material, p, 0.01, 256)
 
 	# save some meaningful results
-	save_plot(y[128,:], 'results', 'test_2_plot')
+	save_plot(y[128,:], 'results', 'test_2_plot')		# plots values along y-axis
 
-	# how to check whether these results are actually correct?
+	# check peak location is at index 128
+	peak_index = np.argmax(np.abs(y[128,:]))
+	peak_value = y[128,:][peak_index]
+
+	# check the rest of the signal is near 0 but allow for transition 
+	# band around 0 due to unideal filtering
+	transition_band = np.arange(118, 138, 1)
+	rest = np.delete(y[128,:], transition_band)
+	rest_max = np.max(np.abs(rest))
+
+	# print(peak_index == 128 and rest_max < 0.2*peak_value)
+	
+	return peak_index == 128 and rest_max < 0.2*peak_value
+
+
 
 def test_3():
 	# explain what this test is for
@@ -64,7 +82,7 @@ def test_3():
 print('Test 1')
 test_1()
 print('Test 2')
-test_2()
+print(test_2())
 print('Test 3')
 test_3()
 
