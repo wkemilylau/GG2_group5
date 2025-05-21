@@ -1,26 +1,43 @@
 import numpy as np
-from attenuate import *
-from ct_calibrate import *
+from attenuate import attenuate
+from ct_calibrate import ct_calibrate
 
 def hu(p, material, reconstruction, scale):
-    """Convert CT reconstruction output to Hounsfield Units (HU).
-    
-    calibrated = hu(p, material, reconstruction, scale) converts the reconstruction into 
-    Hounsfield Units, using the material coefficients, photon energy p, and the scale given.
-    """
+    depth = np.array([1.0])  # 1 cm path length
 
-    #Creating a 1x1 phantom representing a 1 cm path through either water or air
-    water_phantom = np.ones((1, 1))
+    coeff_water = material.coeff('Water')
+    coeff_air = material.coeff('Air')
 
-    #attenuation simulation for 1cm of both air and water
-    I_water = attenuate(p, material, water_phantom, 'Water', scale=scale)
-    I_air = attenuate(p, material, water_phantom, 'Air', scale=scale)
+    I_water = attenuate(p, coeff_water, depth)
+    I_air = attenuate(p, coeff_air, depth)
 
-    # effective mu values obtained by calibrating the attenuated intensities
-    mu_water = ct_calibrate(p, material, I_water, scale)[0, 0]
-    mu_air = ct_calibrate(p, material, I_air, scale)[0, 0]
+    sinogram_water = np.sum(I_water, axis=0).reshape(1, 1)
+    sinogram_air = np.sum(I_air, axis=0).reshape(1, 1)
 
-    #Hounsfield Units conversion
-    hu_image = 1000 * (reconstruction - mu_air) / (mu_water - mu_air)
+    mu_water = ct_calibrate(p, material, sinogram_water, scale)[0, 0]
+    mu_air = ct_calibrate(p, material, sinogram_air, scale)[0, 0]
+
+    denominator = mu_water - mu_air
+    if abs(denominator) < 1e-8:
+        denominator = 1e-8
+
+    hu_image = 1000 * (reconstruction - mu_air) / denominator
 
     return hu_image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
