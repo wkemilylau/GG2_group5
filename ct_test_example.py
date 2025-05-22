@@ -121,7 +121,7 @@ def test_4():
     # Assertion for test pass/fail
 	assert np.isclose(central_mean, expected_value, rtol=0.07), f"Reconstruction mean {central_mean:.4f} differs from expected {expected_value:.4f}"
 
-'''
+
 # Run the various tests
 print('Test 1')
 test_1()
@@ -129,8 +129,6 @@ print('Test 2')
 print(test_2())
 print('Test 3')
 test_3()
-'''
-
 
 print('Test 4')
 test_4()

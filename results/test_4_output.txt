@@ -1,0 +1,2 @@
+Mean reconstructed value: 0.1343
+Expected attenuation (ideal): 0.1439
