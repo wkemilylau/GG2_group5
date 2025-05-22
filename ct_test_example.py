@@ -8,6 +8,8 @@ from ct_lib import *
 from scan_and_reconstruct import *
 from create_dicom import *
 from attenuate import *
+from skimage.metrics import structural_similarity as ssim
+from scipy.stats import pearsonr
 
 
 # create object instances
@@ -18,16 +20,16 @@ source = Source()
 
 def test_1():
     """
-    Test that the reconstructed image structurally and statistically matches the phantom.
+    Test 1 checks that the reconstructed image structurally and statistically matches that of the phantom.
     Uses SSIM and Pearson correlation as metrics.
     """
 
-    # Generate phantom and simulate scan
+    # Generate phantom and simulate the scan
     p = ct_phantom(material.name, 256, 3)
     s = source.photon('100kVp, 3mm Al')
     y = scan_and_reconstruct(s, material, p, 0.01, 256)
 
-    # Save results (optional)
+    # Save results 
     save_draw(y, 'results', 'test_1_image')
     save_draw(p, 'results', 'test_1_phantom')
 
@@ -37,7 +39,7 @@ def test_1():
     # Compute Pearson correlation coefficient
     r, _ = pearsonr(p.flatten(), y.flatten())
 
-    # Thresholds: good structural and intensity match
+    # Thresholds: ensuring good structural and intensity match
     return ssim_score > 0.95 and r > 0.98
 
 
@@ -107,10 +109,4 @@ def check_values():
 	assert np.isclose(central_mean, expected_value, rtol=0.07), f"Reconstruction mean {central_mean:.4f} differs from expected {expected_value:.4f}"
 
 
-# Run the various tests
-print('Test 1')
-test_1()
-print('Test 2')
-print(test_2())
-print('Test 3')
-test_3()
+
