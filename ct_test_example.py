@@ -84,7 +84,7 @@ def check_values():
     Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation.
     Since using phantom 2, check that the material used is of 'Soft Tissue'
 	'''
-	p= ct_phantom(material.name, 256, 1, metal=None)
+	p= ct_phantom(material.name, 256, 1, metal=None) #metal=None default goes to 'Soft Tissue'
 	save_draw(p, 'results', 'test_4_phantom')
 
 	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
