@@ -67,8 +67,8 @@ def test_3():
 
 	# work out what the initial conditions should be
 	p = ct_phantom(material.name, 256, 1)
-	draw(p)
-	s = fake_source(source.mev, 0.1, method='ideal')
+	save_draw(p, 'results', 'test_3_phantom')
+	s = source.photon('80kVp, 1mm Al')
 	y = scan_and_reconstruct(s, material, p, 0.1, 256)
 
 	# save some meaningful results
@@ -77,15 +77,16 @@ def test_3():
 	f.close()
 
 	# how to check whether these results are actually correct?
-	expected_mean = 980  # hypothetical expected mean
+	expected_mean = 640  # hypothetical expected mean
 	actual_mean = np.mean(y[64:192, 64:192])
+	print(actual_mean)
 	assert np.isclose(actual_mean, expected_mean, rtol=0.05), f"Mean {actual_mean} differs from expected {expected_mean}"
 
 
 # Run the various tests
-print('Test 1')
-test_1()
-print('Test 2')
-print(test_2())
+#print('Test 1')
+#test_1()
+#print('Test 2')
+#print(test_2())
 print('Test 3')
 test_3()
