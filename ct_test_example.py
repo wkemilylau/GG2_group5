@@ -36,7 +36,7 @@ def test_1():
     return abs(mean_p - mean_y) / mean_p < 0.01
 
 
-def test_2():
+def check_geometry():
 	# explain what this test is for
 	"""
 	Test 2 checks that a point-source phantom can be scanned and
@@ -67,7 +67,7 @@ def test_2():
 
 
 
-def test_3():
+def check_values():
 	'''
     Tests CT reconstruction with phantom 2 and a fake photon source.
     Saves phantom and reconstruction results.
