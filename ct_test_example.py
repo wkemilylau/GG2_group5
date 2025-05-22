@@ -76,13 +76,13 @@ def check_geometry():
 
 def check_values():
 	'''
-    Tests CT reconstruction with phantom 2 and a fake photon source.
-    Saves phantom and reconstruction results.
-    Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation.
+    Tests CT reconstruction with phantom 2 and a fake photon source
+    Saves phantom and reconstruction results
+    Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation
     Since using phantom 2, check that the material used is of 'Soft Tissue'
 	'''
 	p= ct_phantom(material.name, 256, 1, metal=None) #metal=None default goes to 'Soft Tissue'
-	save_draw(p, 'results', 'test_3_phantom')
+	save_draw(p, 'results', 'test_phantom')
 
 	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
 	y = scan_and_reconstruct(s, material, p, 0.1, 256) #256x256
@@ -90,18 +90,49 @@ def check_values():
 	# Compute the mean intensity in the central region
 	central_mean = np.mean(y[64:192, 64:192])
 
-
 	# Compute expected attenuation
 	coeff_soft_tissue = material.coeff('Soft Tissue')  # linear attenuation coeff (len=200)
 	residual = attenuate(s, coeff_soft_tissue, depth=1) #no of photons at each energy
 
 	I0_E = np.sum(s)
 	I1 = np.sum(residual)
-	mu = - np.log(I1/I0_E)
-	expected_value = mu
-
+	expected_value = - np.log(I1/I0_E) # calculating mu
+	
     # Save results to file
-	with open('results/test_3_output.txt', 'w') as f:
+	with open('results/test_check_values_output.txt', 'w') as f:
+		f.write(f'Mean reconstructed value: {central_mean:.4f}\n')
+		f.write(f'Expected attenuation (ideal): {expected_value:.4f}\n')
+
+    # Assertion for test pass/fail
+	assert np.isclose(central_mean, expected_value, rtol=0.07), f"Reconstruction mean {central_mean:.4f} differs from expected {expected_value:.4f}"
+
+
+def check_values_metal():
+	'''
+    Tests CT reconstruction with phantom 2 and a fake photon source
+    Saves phantom and reconstruction results
+    Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation
+    Using phantom 2, set the material used is Aluminium
+	'''
+	p= ct_phantom(material.name, 256, 1, metal='Aluminium') #metal=None default goes to 'Soft Tissue'
+	save_draw(p, 'results', 'test_phantom')
+
+	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
+	y = scan_and_reconstruct(s, material, p, 0.1, 256) #256x256
+
+	# Compute the mean intensity in the central region
+	central_mean = np.mean(y[64:192, 64:192])
+
+	# Compute expected attenuation
+	coeff_soft_tissue = material.coeff('Aluminium')  # linear attenuation coeff (len=200)
+	residual = attenuate(s, coeff_soft_tissue, depth=1) #no of photons at each energy
+
+	I0_E = np.sum(s)
+	I1 = np.sum(residual)
+	expected_value = - np.log(I1/I0_E) # calculating mu
+	
+    # Save results to file
+	with open('results/test_check_values_metal_output.txt', 'w') as f:
 		f.write(f'Mean reconstructed value: {central_mean:.4f}\n')
 		f.write(f'Expected attenuation (ideal): {expected_value:.4f}\n')
 
@@ -116,3 +147,5 @@ print('Checking geometry')
 print(check_geometry())
 print('Checking values')
 check_values()
+print('Checking values metal')
+check_values_metal()
