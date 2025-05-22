@@ -8,6 +8,8 @@ from ct_phantom import *
 from ct_lib import *
 from scan_and_reconstruct import *
 from create_dicom import *
+from attenuate import *
+
 
 # create object instances
 material = Material()
@@ -67,10 +69,9 @@ def test_2():
 
 def test_3():
 	'''
-	Tests the CT reconstruction with a standard phantom and X-ray source.
-    Saves phantom and reconstruction results. Validates reconstruction by checking central mean HU.
+	Tests the CT reconstruction with phantom 2 and X-ray source.photon('80kVp, 1mm Al')
+    Save phantom and reconstruction results. Validates reconstruction by checking central mean value
     '''
-
 	# work out what the initial conditions should be
 	p = ct_phantom(material.name, 256, 1)
 	save_draw(p, 'results', 'test_3_phantom')
@@ -86,8 +87,41 @@ def test_3():
 	actual_mean = np.mean(y[64:192, 64:192])
 	assert np.isclose(actual_mean, expected_mean, rtol=0.05), f"Mean {actual_mean} differs from expected {expected_mean}"
 
+def test_4():
+	'''
+    Tests CT reconstruction with phantom 2 and a fake photon source.
+    Saves phantom and reconstruction results.
+    Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation.
+    Since using phantom 2, check that the material used is of 'Soft Tissue'
+	'''
+	p= ct_phantom(material.name, 256, 1, metal=None)
+	save_draw(p, 'results', 'test_4_phantom')
+
+	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
+	y = scan_and_reconstruct(s, material, p, 0.1, 256) #256x256
+
+	# Compute the mean intensity in the central region
+	central_mean = np.mean(y[64:192, 64:192])
 
 
+	# Compute expected attenuation
+	coeff_soft_tissue = material.coeff('Soft Tissue')  # linear attenuation coeff (len=200)
+	residual = attenuate(s, coeff_soft_tissue, depth=1) #no of photons at each energy
+
+	I0_E = np.sum(s)
+	I1 = np.sum(residual)
+	mu = - np.log(I1/I0_E)
+	expected_value = mu
+
+    # Save results to file
+	with open('results/test_4_output.txt', 'w') as f:
+		f.write(f'Mean reconstructed value: {central_mean:.4f}\n')
+		f.write(f'Expected attenuation (ideal): {expected_value:.4f}\n')
+
+    # Assertion for test pass/fail
+	assert np.isclose(central_mean, expected_value, rtol=0.07), f"Reconstruction mean {central_mean:.4f} differs from expected {expected_value:.4f}"
+
+'''
 # Run the various tests
 print('Test 1')
 test_1()
@@ -95,3 +129,8 @@ print('Test 2')
 print(test_2())
 print('Test 3')
 test_3()
+'''
+
+
+print('Test 4')
+test_4()
