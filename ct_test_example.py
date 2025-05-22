@@ -106,6 +106,6 @@ def check_values():
 print('Test 1')
 test_1()
 print('Test 2')
-print(test_2())
+print(check_geometry())
 print('Test 3')
-test_3()
+check_values()
