@@ -82,7 +82,7 @@ def check_values():
     Since using phantom 2, check that the material used is of 'Soft Tissue'
 	'''
 	p= ct_phantom(material.name, 256, 1, metal=None) #metal=None default goes to 'Soft Tissue'
-	save_draw(p, 'results', 'test_4_phantom')
+	save_draw(p, 'results', 'test_3_phantom')
 
 	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
 	y = scan_and_reconstruct(s, material, p, 0.1, 256) #256x256
@@ -101,7 +101,7 @@ def check_values():
 	expected_value = mu
 
     # Save results to file
-	with open('results/test_4_output.txt', 'w') as f:
+	with open('results/test_3_output.txt', 'w') as f:
 		f.write(f'Mean reconstructed value: {central_mean:.4f}\n')
 		f.write(f'Expected attenuation (ideal): {expected_value:.4f}\n')
 
