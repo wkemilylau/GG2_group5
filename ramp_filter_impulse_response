@@ -5,6 +5,16 @@ import ct_lib
 
 impulse = np.zeros((256,256))
 impulse[128][128] = 1.0
-filtered_response = ramp_filter.ramp_filter(impulse, 0.1, 0.5)
+filtered_response_1 = ramp_filter.ramp_filter(impulse, 0.1, 0.001)[128]
+# filtered_response_2 = ramp_filter.ramp_filter(impulse, 0.1, 0.1)[128]
+filtered_response_3 = ramp_filter.ramp_filter(impulse, 0.1, 1.0)[128]
+filtered_response_4 = ramp_filter.ramp_filter(impulse, 0.1, 10.0)[128]
 
-ct_lib.plot(filtered_response[128], xlabel='x', title='Impulse response of ramp filter')
+plt.plot(filtered_response_1, label='alpha = 0.001', linewidth=1)
+# plt.plot(filtered_response_2, label='alpha = 0.1')
+plt.plot(filtered_response_3, label='alpha = 1.0', linewidth=1)
+plt.plot(filtered_response_4, label='alpha = 10.0', linewidth=1)
+plt.xlabel('x')
+plt.xlim([113,143])
+plt.legend()
+plt.show()
