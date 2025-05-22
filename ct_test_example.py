@@ -7,13 +7,8 @@ from ct_phantom import *
 from ct_lib import *
 from scan_and_reconstruct import *
 from create_dicom import *
-<<<<<<< HEAD
-from skimage.metrics import structural_similarity as ssim
-from scipy.stats import pearsonr
-=======
 from attenuate import *
 
->>>>>>> refs/remotes/origin/main
 
 # create object instances
 material = Material()
