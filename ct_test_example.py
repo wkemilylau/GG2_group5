@@ -18,10 +18,10 @@ source = Source()
 
 
 
-def test_1():
+def check_images():
     """
-    Test 1 checks that the reconstructed image structurally and statistically matches that of the phantom.
-    Uses SSIM and Pearson correlation as metrics.
+    This test checks that the reconstructed image structurally and statistically matches that of the phantom.
+    Uses the SSIM and Pearson correlation as metrics.
     """
 
     # Generate phantom and simulate the scan
@@ -39,7 +39,7 @@ def test_1():
     # Compute Pearson correlation coefficient
     r, _ = pearsonr(p.flatten(), y.flatten())
 
-    # Thresholds: ensuring good structural and intensity match
+    # Thresholds: ensuring a good structural and intensity match
     return ssim_score > 0.95 and r > 0.98
 
 
@@ -111,7 +111,7 @@ def check_values():
 
 # Run the various tests
 print('Test 1')
-test_1()
+check_images()
 print('Test 2')
 print(check_geometry())
 print('Test 3')
