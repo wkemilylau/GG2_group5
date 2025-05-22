@@ -7,4 +7,4 @@ impulse = np.zeros((256,256))
 impulse[128][128] = 1.0
 filtered_response = ramp_filter.ramp_filter(impulse, 0.1, 0.5)
 
-ct_lib.draw(filtered_response)
+ct_lib.plot(filtered_response[128], xlabel='x', title='Impulse response of ramp filter')
