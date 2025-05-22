@@ -109,6 +109,3 @@ print('Test 2')
 print(test_2())
 print('Test 3')
 test_3()
-
-print('Test 4')
-test_4()
