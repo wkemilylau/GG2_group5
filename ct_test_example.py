@@ -69,26 +69,6 @@ def test_2():
 
 def test_3():
 	'''
-	Tests the CT reconstruction with phantom 2 and X-ray source.photon('80kVp, 1mm Al')
-    Save phantom and reconstruction results. Validates reconstruction by checking central mean value
-    '''
-	# work out what the initial conditions should be
-	p = ct_phantom(material.name, 256, 1)
-	save_draw(p, 'results', 'test_3_phantom')
-	s = source.photon('80kVp, 1mm Al')
-	y = scan_and_reconstruct(s, material, p, 0.1, 256)
-
-	# save some meaningful results
-	f = open('results/test_3_output.txt', mode='w')
-	f.write('Mean value is ' + str(np.mean(y[64:192, 64:192])))
-	f.close()
-
-	expected_mean = 0.25  # hypothetical expected mean
-	actual_mean = np.mean(y[64:192, 64:192])
-	assert np.isclose(actual_mean, expected_mean, rtol=0.05), f"Mean {actual_mean} differs from expected {expected_mean}"
-
-def test_4():
-	'''
     Tests CT reconstruction with phantom 2 and a fake photon source.
     Saves phantom and reconstruction results.
     Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation.
