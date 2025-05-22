@@ -21,14 +21,20 @@ def ramp_filter(sinogram, scale, alpha=0.001):
 	m = int(2 ** m)
 
 	# 2d FT sinogram to freq domain
-	freq = fftfreq(m, scale) 
-    
-	filtered_sinogram = np.zeros_like(sinogram)
+	freq = fftfreq(m, scale)
+	omega = 2 * np.pi * freq
+	omega_max = np.max(np.abs(omega))
       
-	# multiply by filter
-	filter_vals = np.abs(freq)
+	# Define the filter in frequency domain
+	filter_vals = np.abs(omega) / (2 * np.pi)
+	with np.errstate(invalid='ignore'):  # avoid warnings for invalid values
+		cos_term = np.cos((omega / omega_max) * (np.pi / 2))
+		cos_term[np.abs(omega) > omega_max] = 0  # zero out-of-band
+		filter_vals *= cos_term ** alpha
+		filter_vals[np.isnan(filter_vals)] = 0  # handle NaNs at ω = 0
 
 	# apply filter to all angles
+	filtered_sinogram = np.zeros_like(sinogram)
 	for i in range(angles):
 		projection = sinogram[i]
 		projection_padded = np.zeros(m)
@@ -42,5 +48,3 @@ def ramp_filter(sinogram, scale, alpha=0.001):
 	print('Ramp filtering')
 	
 	return filtered_sinogram
-
-
