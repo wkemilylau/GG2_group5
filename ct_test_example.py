@@ -1,5 +1,4 @@
 
-# these are the imports you are likely to need
 import numpy as np
 from material import *
 from source import *
@@ -15,25 +14,31 @@ from attenuate import *
 material = Material()
 source = Source()
 
-# define each end-to-end test here, including comments
-# these are just some examples to get you started
-# all the output should be saved in a 'results' directory
+
 
 def test_1():
-    # Checking that mean of reconstructed image is close to mean of phantom
+    """
+    Test that the reconstructed image structurally and statistically matches the phantom.
+    Uses SSIM and Pearson correlation as metrics.
+    """
 
+    # Generate phantom and simulate scan
     p = ct_phantom(material.name, 256, 3)
     s = source.photon('100kVp, 3mm Al')
     y = scan_and_reconstruct(s, material, p, 0.01, 256)
 
+    # Save results (optional)
     save_draw(y, 'results', 'test_1_image')
     save_draw(p, 'results', 'test_1_phantom')
 
-    mean_p = np.mean(p)
-    mean_y = np.mean(y)
+    # Compute SSIM (structural similarity)
+    ssim_score = ssim(p, y, data_range=np.max(p) - np.min(p))
 
-    # Checking that means are reasonably close (within 1%)
-    return abs(mean_p - mean_y) / mean_p < 0.01
+    # Compute Pearson correlation coefficient
+    r, _ = pearsonr(p.flatten(), y.flatten())
+
+    # Thresholds: good structural and intensity match
+    return ssim_score > 0.95 and r > 0.98
 
 
 def check_geometry():
