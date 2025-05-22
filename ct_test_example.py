@@ -30,7 +30,7 @@ def test_1():
     mean_p = np.mean(p)
     mean_y = np.mean(y)
 
-    # Checking that means are reasonably close (within 1% of each other)
+    # Checking that means are reasonably close (within 1%)
     return abs(mean_p - mean_y) / mean_p < 0.01 
 
 
