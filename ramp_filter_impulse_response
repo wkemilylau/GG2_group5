@@ -1,0 +1,10 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import ramp_filter
+import ct_lib
+
+impulse = np.zeros((256,256))
+impulse[128][128] = 1.0
+filtered_response = ramp_filter.ramp_filter(impulse, 0.1, 0.5)
+
+ct_lib.draw(filtered_response)
