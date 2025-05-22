@@ -110,9 +110,9 @@ def check_values():
 
 
 # Run the various tests
-print('Test 1')
+print('Checking reconstructed image')
 check_images()
-print('Test 2')
+print('Checking geometry')
 print(check_geometry())
-print('Test 3')
+print('Checking values')
 check_values()
