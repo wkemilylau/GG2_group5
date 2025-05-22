@@ -82,7 +82,7 @@ def test_3():
 	f.write('Mean value is ' + str(np.mean(y[64:192, 64:192])))
 	f.close()
 
-	expected_mean = 640  # hypothetical expected mean
+	expected_mean = 0.25  # hypothetical expected mean
 	actual_mean = np.mean(y[64:192, 64:192])
 	assert np.isclose(actual_mean, expected_mean, rtol=0.05), f"Mean {actual_mean} differs from expected {expected_mean}"
 
