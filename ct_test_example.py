@@ -43,7 +43,7 @@ def test_1():
     r, _ = pearsonr(p.flatten(), y.flatten())
 
     # Thresholds: good structural and intensity match
-    return ssim_score > 0.95 and r > 0.97
+    return ssim_score > 0.95 and r > 0.98
 
 
 def check_geometry():
