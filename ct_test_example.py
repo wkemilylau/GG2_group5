@@ -7,8 +7,13 @@ from ct_phantom import *
 from ct_lib import *
 from scan_and_reconstruct import *
 from create_dicom import *
+<<<<<<< HEAD
 from skimage.metrics import structural_similarity as ssim
 from scipy.stats import pearsonr
+=======
+from attenuate import *
+
+>>>>>>> refs/remotes/origin/main
 
 # create object instances
 material = Material()
@@ -41,7 +46,7 @@ def test_1():
     return ssim_score > 0.95 and r > 0.97
 
 
-def test_2():
+def check_geometry():
 	# explain what this test is for
 	"""
 	Test 2 checks that a point-source phantom can be scanned and
@@ -72,27 +77,39 @@ def test_2():
 
 
 
-def test_3():
+def check_values():
 	'''
-	Tests the CT reconstruction with a standard phantom and X-ray source.
-    Saves phantom and reconstruction results. Validates reconstruction by checking central mean HU.
-    '''
+    Tests CT reconstruction with phantom 2 and a fake photon source.
+    Saves phantom and reconstruction results.
+    Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation.
+    Since using phantom 2, check that the material used is of 'Soft Tissue'
+	'''
+	p= ct_phantom(material.name, 256, 1, metal=None)
+	save_draw(p, 'results', 'test_4_phantom')
 
-	# work out what the initial conditions should be
-	p = ct_phantom(material.name, 256, 1)
-	save_draw(p, 'results', 'test_3_phantom')
-	s = source.photon('80kVp, 1mm Al')
-	y = scan_and_reconstruct(s, material, p, 0.1, 256)
+	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
+	y = scan_and_reconstruct(s, material, p, 0.1, 256) #256x256
 
-	# save some meaningful results
-	f = open('results/test_3_output.txt', mode='w')
-	f.write('Mean value is ' + str(np.mean(y[64:192, 64:192])))
-	f.close()
+	# Compute the mean intensity in the central region
+	central_mean = np.mean(y[64:192, 64:192])
 
-	expected_mean = 0.25  # hypothetical expected mean
-	actual_mean = np.mean(y[64:192, 64:192])
-	assert np.isclose(actual_mean, expected_mean, rtol=0.05), f"Mean {actual_mean} differs from expected {expected_mean}"
 
+	# Compute expected attenuation
+	coeff_soft_tissue = material.coeff('Soft Tissue')  # linear attenuation coeff (len=200)
+	residual = attenuate(s, coeff_soft_tissue, depth=1) #no of photons at each energy
+
+	I0_E = np.sum(s)
+	I1 = np.sum(residual)
+	mu = - np.log(I1/I0_E)
+	expected_value = mu
+
+    # Save results to file
+	with open('results/test_4_output.txt', 'w') as f:
+		f.write(f'Mean reconstructed value: {central_mean:.4f}\n')
+		f.write(f'Expected attenuation (ideal): {expected_value:.4f}\n')
+
+    # Assertion for test pass/fail
+	assert np.isclose(central_mean, expected_value, rtol=0.07), f"Reconstruction mean {central_mean:.4f} differs from expected {expected_value:.4f}"
 
 
 # Run the various tests
