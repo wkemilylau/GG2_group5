@@ -28,6 +28,7 @@ def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, a
 
     # Reconstruct image by back-projecting the filtered sinogram
     reconstruction = back_project(filtered, skip=1)
+    print(reconstruction [0])
 
     # Convert reconstructed linear attenuation coefficients to Hounsfield Units (HU)
     hu_image = hu(photons_total, material, reconstruction, scale)
