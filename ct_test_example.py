@@ -81,7 +81,7 @@ def check_values():
     Validates reconstruction by comparing the mean of the central region to an analytically computed attenuation.
     Since using phantom 2, check that the material used is of 'Soft Tissue'
 	'''
-	p= ct_phantom(material.name, 256, 1, metal=None)
+	p= ct_phantom(material.name, 256, 1, metal=None) #metal=None default goes to 'Soft Tissue'
 	save_draw(p, 'results', 'test_4_phantom')
 
 	s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
@@ -109,4 +109,10 @@ def check_values():
 	assert np.isclose(central_mean, expected_value, rtol=0.07), f"Reconstruction mean {central_mean:.4f} differs from expected {expected_value:.4f}"
 
 
-
+# Run the various tests
+print('Test 1')
+test_1()
+print('Test 2')
+print(check_geometry())
+print('Test 3')
+check_values()
