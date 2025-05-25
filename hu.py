@@ -2,7 +2,7 @@ import numpy as np
 from attenuate import *
 from ct_calibrate import *
 from ct_detect import *
-import ct_scan import *
+from ct_scan import *
 
 '''
 def hu(p, material, reconstruction, scale):
