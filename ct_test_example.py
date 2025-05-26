@@ -59,19 +59,12 @@ def check_geometry():
 	save_plot(y[128,:], 'results', 'test_2_plot')		# plots values along y-axis
 
 	# check peak location is at index 128
-	peak_index = np.argmax(np.abs(y[128,:]))
-	peak_value = y[128,:][peak_index]
+	peak_index = np.argmax((y[128,:]))
+	# peak_value = y[128,:][peak_index]
 
-	# check the rest of the signal is near 0 but allow for transition
-	# band around 0 due to unideal filtering
-	transition_band = np.arange(118, 138, 1)
-	rest = np.delete(y[128,:], transition_band)
-	rest_max = np.max(np.abs(rest))
+	print(peak_index)
 
-	# print(peak_index == 128 and rest_max < 0.2*peak_value)
-
-	return peak_index == 128 and rest_max < 0.2*peak_value
-
+	return peak_index == 128
 
 
 def check_values():

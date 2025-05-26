@@ -27,6 +27,7 @@ def ramp_filter(sinogram, scale, alpha=0.001):
       
 	# Define the filter in frequency domain
 	filter_vals = np.abs(omega) / (2 * np.pi)
+	filter_vals[0] = filter_vals[1]/6
 	with np.errstate(invalid='ignore'):  # avoid warnings for invalid values
 		cos_term = np.cos((omega / omega_max) * (np.pi / 2))
 		cos_term[np.abs(omega) > omega_max] = 0  # zero out-of-band
