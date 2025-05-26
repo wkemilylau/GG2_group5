@@ -53,11 +53,18 @@ def ct_detect(p, coeffs, depth, mas=10000):
 	# calculate array of residual mev x samples for each material in turn
 	for m in range(materials):
 		detector_photons = attenuate(detector_photons, coeffs[m], depth[m])
+		# add material scattering / detector noise here; depends on mas
+		det_mean = 0
+		det_scale = 1000000/mas
+		detector_photons += np.random.normal(det_mean, det_scale)
 
 	# sum this over energies
 	detector_photons = np.sum(detector_photons, axis=0)
 
-	# model noise
+	# add background noise (Normal approximation of Poisson dist.)
+	bg_mean = 140000
+	bg_scale = 120000
+	detector_photons += np.random.normal(bg_mean, bg_scale)
 
 	# minimum detection is one photon
 	detector_photons = np.clip(detector_photons, 1, None)
