@@ -9,29 +9,35 @@ import numpy as np
 
 def beam_hardening_calibration_polyfit(photons, material, scale, degree=3, num_points=50):
     """
-    Final working version that properly handles all edge cases
+    Uses ct_detect to simulate beam hardening for calibration and fits a polynomial
+    mapping log attenuation to true material thickness (for water).
     """
-    # Get coefficients and ensure proper shapes
-    water_coeffs = material.coeff('Water')  # shape (E,)
-    thicknesses = np.linspace(0, 20, num_points)  # shape (num_points,)
-    
-    # Pre-compute I0
+
+    # Get water attenuation coefficients
+    water_coeffs = material.coeff('Water')  
+
+    # Create thickness samples
+    thicknesses = np.linspace(0, 20, num_points)
+
+    # Compute I0 once (no attenuation)
     I0 = np.sum(photons)
-    
-    # Calculate pw for each thickness
-    pw = np.zeros(num_points)
-    for i, t in enumerate(thicknesses):
-        # Critical fix: ensure depth is passed as 1-element array
-        transmitted = np.sum(attenuate(photons, water_coeffs, np.array([t])))
-        pw[i] = -np.log(transmitted / I0) if transmitted > 0 else 0
-    
-    # Filter out invalid points
-    valid = (pw > 0) & (pw < 20)  # Physical bounds
+
+    # Simulate attenuation for each thickness using ct_detect
+    depth_array = np.array(thicknesses).reshape(1, -1)  
+    coeffs = np.array(water_coeffs).reshape(1, -1)     
+    photons_detected = ct_detect(photons, coeffs, depth_array)  
+
+    # Compute linear attenuation
+    pw = -np.log(np.clip(photons_detected, 1e-12, None) / I0)
+
+    # Filter for valid (physical) range
+    valid = (pw > 0) & (pw < 20)
     if np.sum(valid) < degree + 1:
         raise ValueError("Not enough valid points for polynomial fit")
-    
-    # Return polynomial coefficients
+
+    # Fit polynomial: pw → thickness
     return np.polyfit(pw[valid], thicknesses[valid], degree)
+
 
 
 def ct_calibrate(photons, material, sinogram, scale):
@@ -69,3 +75,5 @@ def ct_calibrate(photons, material, sinogram, scale):
     #beam hardening
     poly_coeffs = beam_hardening_calibration_polyfit(photons, material, scale)
     return np.polyval(poly_coeffs, p)
+
+
