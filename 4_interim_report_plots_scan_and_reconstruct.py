@@ -60,8 +60,8 @@ p= ct_phantom(material.name, 256, 3, metal=None) #metal=None default goes to 'So
 save_draw(p, 'results', 'test_phantom')
 
 s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
-y_no = scan_and_reconstruct_no_filter(s, material, p, 0.1, 256) #256x256
-y_with = scan_and_reconstruct_with_filter(s, material, p, 0.1, 256) #256x256
+y_no = scan_and_reconstruct_no_filter(s, material, p, 0.01, 256) #256x256
+y_with = scan_and_reconstruct_with_filter(s, material, p, 0.01, 256) #256x256
 
 save_plot(y_no[128,:], 'results', 'no_filter')
 save_plot(y_with[128,:], 'results', 'with_filter')
@@ -97,10 +97,10 @@ plt.plot(filtered_response_3, label='α = 1.0', linewidth=1)
 plt.plot(filtered_response_4, label='α = 10.0', linewidth=1)
 
 # Add axis labels
-plt.xlabel('Detector Index (x)')
-plt.ylabel('Filtered Impulse Response')
+plt.xlabel('Detector index (x)')
+plt.ylabel('Filtered impulse response')
 
-plt.title('Ramp Filter Impulse Response (Row 128)')
+#plt.title('Ramp Filter Impulse Response (Row 128)')
 plt.xlim([113, 143])
 plt.legend()
 plt.grid(True)

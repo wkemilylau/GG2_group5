@@ -16,6 +16,7 @@ from ramp_filter import *
 from back_project import *
 from hu import *
 from attenuate import *
+from scan_and_reconstruct import *
 
 alpha=0.001
 mas=10000
@@ -29,28 +30,6 @@ phantom = ct_phantom(material.name, 256, 3) #creates 256x256 image
 photons = source.photon('100kVp, 2mm Al')
 photons_total = photons * mas * (scale**2)
 
-def hu(photons, material, reconstruction, scale):
-    n = 256
-    scale = 0.1  # cm per pixel
-    names = ['Air', 'Adipose', 'Soft Tissue', 'Breast Tissue', 'Water']
-    idx_water = names.index('Water')
-    idx_air = names.index('Air')
-
-    # water phantom
-    phantom = np.full((n, n), idx_water, dtype=int)
-    photons = source.photon('100kVp, 2mm Al')
-    sinogram = ct_scan(photons, material, phantom, scale=scale, angles=256) # Generate sinogram of water
-    attenuation_sinogram = ct_calibrate(photons, material, sinogram, scale)
-
-    # μ of water is mean of uniform region (use center strip)
-    mu_water = np.mean(attenuation_sinogram[:, n//2])
-
-    print(f"μ_water ≈ {mu_water:.3f} cm⁻¹")
-
-    hu_image = 1000 * (reconstruction - mu_water) / mu_water
-    return hu_image
-
-
 ###################
 sinogram = ct_scan(photons_total, material, phantom, scale=0.01, angles=256)
 
@@ -63,37 +42,17 @@ filtered = ramp_filter(calibrated, scale, alpha)
 # Reconstruct image by back-projecting the filtered sinogram
 reconstruction = back_project(filtered, skip=1)
 
-hu_image = hu(photons_total, material, reconstruction, scale=0.01)
+#===============================
 
-plt.imshow(hu_image, cmap='gray', interpolation='nearest')
+p= ct_phantom(material.name, 256, 3, metal=None) #metal=None default goes to 'Soft Tissue'
+s = fake_source(material.mev, 120, method='ideal') #ideal source, (len=200), all zero excpet final energy
+y = scan_and_reconstruct(s, material, p, 0.01, 256) #256x256
+
+
+plt.imshow(y, cmap='gray', interpolation='nearest')
 plt.gca().invert_yaxis()
 plt.colorbar()
 plt.show()
-
-#####################
-n = 256
-scale = 0.1  # cm per pixel
-names = ['Air', 'Adipose', 'Soft Tissue', 'Breast Tissue', 'Water']
-idx_water = names.index('Water')
-idx_air = names.index('Air')
-
-# water phantom
-phantom = np.full((n, n), idx_water, dtype=int)
-photons = source.photon('100kVp, 2mm Al')
-sinogram = ct_scan(photons, material, phantom, scale=scale, angles=256) # Generate sinogram of water
-attenuation_sinogram_water = ct_calibrate(photons, material, sinogram, scale)
-
-# air phantom
-phantom = np.full((n, n), idx_air, dtype=int)
-photons = source.photon('100kVp, 2mm Al')
-sinogram = ct_scan(photons, material, phantom, scale=scale, angles=256) # Generate sinogram of air
-attenuation_sinogram_air = ct_calibrate(photons, material, sinogram, scale)
-
-# μ of water is mean of uniform region (use center strip)
-mu_water = np.mean(attenuation_sinogram_water[:, n//2])
-mu_air = np.mean(attenuation_sinogram_air[:, n//2])
-print(f"μ_water ≈ {mu_water:.3f} cm⁻¹")
-print(f"μ_air ≈ {mu_air:.3f} cm⁻¹")
 
 
 '''
@@ -103,3 +62,5 @@ plt.gca().invert_yaxis()
 plt.colorbar()
 plt.show()
 '''
+
+y = scan_and_reconstruct(s, material, p, 0.1, 256) #256x256

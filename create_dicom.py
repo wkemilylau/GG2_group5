@@ -111,18 +111,18 @@ def create_dicom(x, filename, sp, sz=None, f=1, study_uid=None, series_uid=None,
 	# write final file with this metadata
 	ds.save_as(full_filename, write_like_original=False)
 
+	print(os.getcwd())
 
 def read_dicom(filename):
 
 	""" Read DICOM format input file to data
 
-	[x, sp] = read_dicom(filename) reads a DICOM file with a name 
+	[x, sp] = read_dicom(filename) reads a DICOM file with a name
 	`filename' info the (int16) data array x. The pixel scale is also
 	returned in sp which is in mm."""
-	
+
 	ds = pydicom.filereader.dcmread(filename)
 	x = (ds.pixel_array + ds.RescaleIntercept).astype(np.int16)
 	sp = ds.PixelSpacing[0]
-    
-	return x, sp
 
+	return x, sp

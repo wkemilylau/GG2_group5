@@ -22,11 +22,11 @@ phantom = ct_phantom(material.name, 256, 3) #creates 256x256 image
 photons = source.photon('100kVp, 2mm Al')
 
 # Generate sinogram using ct_scan
-sinogram = ct_scan(photons, material, phantom, scale=0.01, angles=402)
+sinogram = ct_scan(photons, material, phantom, scale=0.01, angles=256)
 #print(sinogram.shape) = (angles, detector pixels)
 
 
-'''
+
 #residual energy sinogram, ct_scan with different interpolation techniques
 interpolations = ['nearest', 'bilinear', 'bicubic']
 for interp in interpolations:
@@ -35,8 +35,12 @@ for interp in interpolations:
     plt.gca().invert_yaxis()
     plt.xlabel("Detector pixel locations")
     plt.ylabel("Projection angle")
+
+    plt.xlim(150, 180)
+    plt.ylim(170, 200)
+
     plt.show()
-'''
+
 #========================
 '''
 #residual energy sinogram, for different scanning angles
@@ -55,15 +59,16 @@ for angles in angle_list:
 '''
 
 #========================================
-
+'''
 #Figure
 p = ct_phantom(material.name, 256, 3)
 s = source.photon('100kVp, 3mm Al')
-y = scan_and_reconstruct(s, material, p, 0.01, 300)
+y = scan_and_reconstruct(s, material, p, 0.01, 256)
 
 # Save results
 save_draw(y, 'results', 'test_1_image')
 save_draw(p, 'results', 'test_1_phantom')
+'''
 
 #========================
 '''
@@ -78,8 +83,9 @@ plt.show()
 '''
 
 #======================
+'''
 #Attenuation sinogram
-scale = 0.1  # cm per pixel
+scale = 0.01  # cm per pixel
 attenuation_sinogram = ct_calibrate(photons, material, sinogram, scale)
 plt.imshow(attenuation_sinogram, cmap='gray', interpolation='nearest')
 plt.gca().invert_yaxis()
@@ -88,3 +94,4 @@ plt.xlabel("Detector pixel locations")
 plt.ylabel("Projection angle")
 plt.colorbar()
 plt.show()
+'''

@@ -5,8 +5,9 @@ from ramp_filter import *
 from back_project import *
 from hu import *
 from create_dicom import *
+import os
 
-def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, alpha=0.001, save_filename=None):
+def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, alpha=0.001, save_filename="results/ct_slice"):
     """ Simulation of the CT scanning process
     reconstruction = scan_and_reconstruct(photons, material, phantom, scale, angles, mas, alpha)
     takes the phantom data in phantom (samples x samples), scans it using the
@@ -32,10 +33,12 @@ def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, a
     # print(reconstruction [0])
 
     # Convert reconstructed linear attenuation coefficients to Hounsfield Units (HU)
-    hu_image = hu(photons_total, material, reconstruction, scale)
+    hu_image = hu(photons_total, material, reconstruction, scale=0.01)
+
+    # clip for DICOM-storage
+    hu_image = np.clip(hu_image, -1024, 3072)
 
     # save to DICOM if filename given
-    if save_filename is not None:
-        create_dicom(hu_image.astype(np.int16), save_filename, sp=scale, f=1)
+    create_dicom(hu_image.astype(np.int16), save_filename, sp=scale, f=1)
 
     return hu_image
