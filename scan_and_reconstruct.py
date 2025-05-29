@@ -33,7 +33,8 @@ def scan_and_reconstruct(photons, material, phantom, scale, angles, mas=10000, a
     # print(reconstruction [0])
 
     # Convert reconstructed linear attenuation coefficients to Hounsfield Units (HU)
-    hu_image = hu(photons_total, material, reconstruction, scale=0.01)
+    # hu_image = hu(photons_total, material, reconstruction, scale=0.01)
+    hu_image = hu(photons_total, material, reconstruction)
 
     # clip for DICOM-storage
     hu_image = np.clip(hu_image, -1024, 3072)

@@ -40,13 +40,25 @@ def hu(photons_total, material, reconstruction, scale):
     return hu_image
 
 '''
-def hu(photons_total, material, reconstruction, scale, n_detectors=256, noise=True):
+# def hu(photons_total, material, reconstruction, scale, n_detectors=256, noise=True):
 
-    # Estimate physical depth through water slab of size equal to image
-    depth_cm = 2.0 * n_detectors * scale  # double since X-rays pass across full image
-    water_residual = ct_detect(photons_total, material.coeff('Water'), depth_cm, noise=noise)
-    mu_water = ct_calibrate(photons_total, material, water_residual, scale, n_detectors, noise=noise) / depth_cm
-    hu_image = 1000.0 * (reconstruction - mu_water) / mu_water
-    hu_image = np.clip(hu_image, -1024.0, 3072.0)
+#     # Estimate physical depth through water slab of size equal to image
+#     depth_cm = 2.0 * n_detectors * scale  # double since X-rays pass across full image
+#     water_residual = ct_detect(photons_total, material.coeff('Water'), depth_cm, noise=noise)
+#     mu_water = ct_calibrate(photons_total, material, water_residual, scale, n_detectors, noise=noise) / depth_cm
+#     hu_image = 1000.0 * (reconstruction - mu_water) / mu_water
+#     hu_image = np.clip(hu_image, -1024.0, 3072.0)
 
+#     return hu_image
+
+
+def hu(photons, material, reconstruction):
+    idx = material.name.index('Water')
+    mu_water = np.dot(material.coeffs[idx], photons) / np.sum(photons)
+    hu_image = 1000 * (reconstruction - mu_water) / mu_water
     return hu_image
+
+def window_hu(hu_image, center=0, width=200):
+    g = 128 * (1 + (hu_image - center) / width)
+    g = np.clip(g, 0, 255)  # Ensure values are within [0, 255]
+    return g
